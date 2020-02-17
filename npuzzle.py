@@ -13,7 +13,7 @@ class State():
     prev_states = []
     size = 0
     length = 0
-    turn_set = ['r', 'd', 'l', 'u']
+    turn_set = ('r', 'd', 'l', 'u')
     possible_turns = []
     prev_turn = None
 
@@ -23,7 +23,20 @@ class State():
         self.length = self.size * self.size
         self.goal = [None] * self.length
         self.set_snail()
+        # self.set_zero_first()
+        # self.set_zero_last()
         self.actual = self.goal.copy()
+
+    def set_zero_first(self):
+
+        for cell in range(self.length):
+            self.goal[cell] = cell
+
+    def set_zero_last(self):
+
+        for cell in range(self.length):
+            self.goal[cell] = cell + 1
+        self.goal[self.goal.index(self.length)] = 0
 
     def set_snail(self):
 
@@ -94,7 +107,7 @@ class State():
 
     def mix_sequence(self, steps):
 
-        turns = self.turn_set
+        turns = list(self.turn_set)
         position = self.actual.index(0)
         for step in range(steps):
             random.shuffle(turns)
@@ -114,6 +127,14 @@ class State():
             distance += difference // self.size
         return distance
 
+    def get_hamming_distance(self, state):
+
+        distance = 0
+        for i in range(1, self.length):
+            if self.goal.index(i) != state.index(i):
+                distance += 1
+        return distance
+
     def get_possible_states(self):
 
         possible_states = []
@@ -125,7 +146,7 @@ class State():
             if a != None and not sequence in self.prev_states:
                 possible_states.append(sequence)
                 # self.possible_turns.append(turn)
-                print(position, turn, a)
+                # print(position, turn, a)
             # print(self.possible_turns)
         return possible_states
 
@@ -135,8 +156,9 @@ class State():
         man_distances = []
         for state in possible_states:
             d = self.get_manhattan_distance(state)
+            # d = self.get_hamming_distance(state)
             man_distances.append(d)
-            print('Dist: ', d, ' and state: ', len(possible_states))
+            # print('Dist: ', d, ' and state: ', len(possible_states))
             self.print_2d(state)
         print('man_distances: ', man_distances)
         index = man_distances.index(min(man_distances))
